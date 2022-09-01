@@ -74,12 +74,12 @@ def validate(
 
     # note: trailing slash needed for RefResolver to resolve correctly
     resolver = jsonschema.RefResolver(
-        base_uri=f"file://{variables.schemas}/{version}/",
-        referrer=f"{schema_name}",
+        base_uri=f"file://{variables.schemas}/{version}/{schema_name}",
+        referrer={},
         store=variables.SCHEMA_CACHE,
     )
 
-    Validator = jsonschema.Draft6Validator
+    Validator = jsonschema.Draft202012Validator
 
     if allow_tensors:
         type_checker = Validator.TYPE_CHECKER.redefine(
