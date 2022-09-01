@@ -75,7 +75,7 @@ def validate(
     # note: trailing slash needed for RefResolver to resolve correctly
     resolver = jsonschema.RefResolver(
         base_uri=f"file://{variables.schemas}/{version}/{schema_name}",
-        referrer={},
+        referrer=load_schema(f"{version}/defs.json"),
         store=variables.SCHEMA_CACHE,
     )
 
