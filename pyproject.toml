@@ -257,7 +257,6 @@ module = [
   'pyhf.modifiers.*',
   'pyhf.exceptions.*',
   'pyhf.parameters.*',
-  'pyhf.schema.*',
   'pyhf.writexml',
   'pyhf.workspace',
   'pyhf.patchset',
