@@ -1,12 +1,11 @@
 import numbers
-from typing import Mapping, Union
-
 import jsonschema
 import logging
 import pyhf.exceptions
 from pyhf import tensor
 from pyhf.schema import variables
 from pyhf.schema.loader import load_schema
+from pyhf.typing import Workspace, Model, Measurement, PatchSet
 
 log = logging.getLogger(__name__)
 
@@ -36,12 +35,12 @@ def _is_number_or_tensor_subtype(checker, instance):
 
 
 def validate(
-    spec: Mapping,
+    spec: Workspace | Model | Measurement | PatchSet,
     schema_name: str,
     *,
-    version: Union[str, None] = None,
+    version: str | None = None,
     allow_tensors: bool = True,
-):
+) -> None:
     """
     Validate the provided instance, ``spec``, against the schema associated with ``schema_name``.
 
@@ -79,10 +78,11 @@ def validate(
     schema = load_schema(f'{version}/{schema_name}')
 
     # note: trailing slash needed for RefResolver to resolve correctly
+    # for type ignores below, see https://github.com/python-jsonschema/jsonschema/issues/997
     resolver = jsonschema.RefResolver(
         base_uri=f"file://{variables.schemas}/{version}/{schema_name}",
-        referrer=load_schema(f"{version}/defs.json"),
-        store=variables.SCHEMA_CACHE,
+        referrer=load_schema(f"{version}/defs.json"),  # type: ignore[arg-type]
+        store=variables.SCHEMA_CACHE,  # type: ignore[arg-type]
     )
 
     Validator = jsonschema.Draft202012Validator
@@ -98,4 +98,4 @@ def validate(
     try:
         return validator.validate(spec)
     except jsonschema.ValidationError as err:
-        raise pyhf.exceptions.InvalidSpecification(err, schema_name)
+        raise pyhf.exceptions.InvalidSpecification(err, schema_name)  # type: ignore[no-untyped-call]
