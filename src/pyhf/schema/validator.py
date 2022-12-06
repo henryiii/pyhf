@@ -6,11 +6,12 @@ from pyhf import tensor
 from pyhf.schema import variables
 from pyhf.schema.loader import load_schema
 from pyhf.typing import Workspace, Model, Measurement, PatchSet
+from typing import Any
 
 log = logging.getLogger(__name__)
 
 
-def _is_array_or_tensor(checker, instance):
+def _is_array_or_tensor(checker: jsonschema.TypeChecker, instance: Any) -> bool:
     """
     A helper function for allowing the validation of tensors as list types in schema validation.
 
@@ -18,10 +19,12 @@ def _is_array_or_tensor(checker, instance):
 
         This will check for valid array types using any backends that have been loaded so far.
     """
-    return isinstance(instance, (list, *tensor.array_types))
+    return isinstance(instance, (list, *tensor.array_types))  # type: ignore[attr-defined]
 
 
-def _is_number_or_tensor_subtype(checker, instance):
+def _is_number_or_tensor_subtype(
+    checker: jsonschema.TypeChecker, instance: Any
+) -> bool:
     """
     A helper function for allowing the validation of tensor contents as number types in schema validation.
 
@@ -31,7 +34,7 @@ def _is_number_or_tensor_subtype(checker, instance):
     is_number = jsonschema._types.is_number(checker, instance)
     if is_number:
         return True
-    return isinstance(instance, (numbers.Number, *tensor.array_subtypes))
+    return isinstance(instance, (numbers.Number, *tensor.array_subtypes))  # type: ignore[attr-defined]
 
 
 def validate(
@@ -69,11 +72,14 @@ def validate(
         >>>
     """
 
-    version = version or variables.SCHEMA_VERSION
-    if version != variables.SCHEMA_VERSION:
-        log.warning(
-            f"Specification requested version {version} but latest is {variables.SCHEMA_VERSION}. Upgrade your specification or downgrade pyhf."
-        )
+    latest_known_version = variables.SCHEMA_VERSION.get(schema_name)
+
+    if latest_known_version is not None:
+        version = version or latest_known_version
+        if version != latest_known_version:
+            log.warning(
+                f"Specification requested version {version} but latest is {latest_known_version}. Upgrade your specification or downgrade pyhf."
+            )
 
     schema = load_schema(f'{version}/{schema_name}')
 
