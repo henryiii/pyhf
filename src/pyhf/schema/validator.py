@@ -83,7 +83,6 @@ def validate(
 
     schema = load_schema(f'{version}/{schema_name}')
 
-    # note: trailing slash needed for RefResolver to resolve correctly
     # for type ignores below, see https://github.com/python-jsonschema/jsonschema/issues/997
     resolver = jsonschema.RefResolver(
         base_uri=f"file://{variables.schemas}/{version}/{schema_name}",
