@@ -513,9 +513,7 @@ def test_import_missingPOI(mocker, datadir):
     basedir = datadir.joinpath("xmlimport_missingPOI")
     with pytest.raises(RuntimeError) as excinfo:
         pyhf.readxml.parse(basedir.joinpath("config/example.xml"), basedir)
-    assert 'Measurement GaussExample is missing POI specification' in str(
-        excinfo.value
-    )
+    assert 'Measurement GaussExample is missing POI specification' in str(excinfo.value)
 
 
 def test_import_resolver():
